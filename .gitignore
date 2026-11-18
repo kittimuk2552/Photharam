@@ -1,0 +1,22 @@
+# .gitignore
+# ไม่ต้อง upload ไฟล์เหล่านี้ไป GitHub
+
+# Backup files
+*.bak
+
+# PowerShell server (ใช้งานเฉพาะบน local เท่านั้น)
+server.ps1
+
+# Windows batch opener (local only)
+start.bat
+
+# System files
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Node modules (ถ้ามีในอนาคต)
+node_modules/
+
+# Log files
+*.log

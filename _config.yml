@@ -1,0 +1,5 @@
+# GitHub Pages Configuration
+# ไม่ต้องการ Jekyll theme - เป็น static HTML ล้วน
+include:
+  - lib/
+  - public/
