@@ -2221,11 +2221,29 @@ function initOrRefreshLeafletMap() {
 
     L.control.zoom({ position: 'topright' }).addTo(leafletMap);
 
-    // Official OpenStreetMap tile layer (Real geographic map of Photharam, Ratchaburi)
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Tile layer with multi-provider fallback (works from file:// and all HTTP servers)
+    // Primary: CARTO Voyager - permissive referer policy, works from file://
+    var cartoTile = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
       maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(leafletMap);
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    });
+
+    // Fallback: Esri World Street Map - no referer restriction
+    var esriTile = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap'
+    });
+
+    // Try CARTO first, fallback to Esri if failed
+    cartoTile.on('tileerror', function(e) {
+      if (!leafletMap._esriAdded) {
+        leafletMap._esriAdded = true;
+        leafletMap.removeLayer(cartoTile);
+        esriTile.addTo(leafletMap);
+      }
+    });
+    cartoTile.addTo(leafletMap);
 
     // Create Eco Pins for products
     const ecoIcon = L.divIcon({
